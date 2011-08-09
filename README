@@ -1,0 +1,13 @@
+Scene graph library derived from Planetary's 2D GUI.
+
+Can handle orientation animation and things like that.
+
+Currently still in flux, hoping to implement things like event bubbling
+for version 2.
+
+Not really designed for 3D.
+
+The GUI components like Slider are still quite Planetary specific. They
+will need some adjustment (and samples, and texture images) to be more
+generally useful.
+
