@@ -9,7 +9,6 @@
 #include "BloomScene.h"
 #include "cinder/app/AppCocoaTouch.h"
 #include "cinder/gl/gl.h"
-#include "OrientationHelper.h"
 
 using namespace ci;
 using namespace ci::app;
