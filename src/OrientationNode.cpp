@@ -52,7 +52,7 @@ void OrientationNode::setInterfaceOrientation( const Orientation &orientation, b
 {
     mInterfaceOrientation = orientation;
     
-    std::cout << "setting orientation node orientation to: " << getOrientationDescription(mInterfaceOrientation) << std::endl;
+//    std::cout << "setting orientation node orientation to: " << getOrientationDescription(mInterfaceOrientation) << std::endl;
     
     const float TWO_PI = 2.0f * M_PI;
     
