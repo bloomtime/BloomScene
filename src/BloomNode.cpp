@@ -43,7 +43,7 @@ void BloomNode::removeChild( BloomNodeRef child )
     }
 }
 
-BloomNodeRef BloomNode::removeChildAt( int index )
+BloomNodeRef BloomNode::removeChildAt( const int &index )
 {
     BloomNodeRef child = *mChildren.erase( mChildren.begin() + index );
     child->removedFromScene(); // notify child that mRoot and mParent are about to be invalid    
@@ -62,19 +62,19 @@ BloomNodeRef BloomNode::getChildById( const int &childId ) const
     return BloomNodeRef(); // aka NULL
 }
 
-void BloomNode::privateUpdate()
+void BloomNode::deepUpdate()
 {
     if (mVisible) {
         // update self
         update();
         // update children
         BOOST_FOREACH(BloomNodeRef child, mChildren) {        
-            child->privateUpdate();
+            child->deepUpdate();
         }
     }
 }
 
-void BloomNode::privateDraw()
+void BloomNode::deepDraw()
 {
     if (mVisible) {
         glPushMatrix();
@@ -83,7 +83,7 @@ void BloomNode::privateDraw()
         draw();
         // draw children
         BOOST_FOREACH(BloomNodeRef child, mChildren) {        
-            child->privateDraw();
+            child->deepDraw();
         }
         glPopMatrix();
     }        

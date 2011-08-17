@@ -39,10 +39,10 @@ public:
     void addChildAt( BloomNodeRef child, const int &index );
     
     void removeChild( BloomNodeRef child );
-    BloomNodeRef removeChildAt( int index );
+    BloomNodeRef removeChildAt( const int &index );
     
     int getNumChildren() const { return mChildren.size(); }
-    BloomNodeRef getChildAt( int index ) const { return mChildren[index]; }
+    BloomNodeRef getChildAt( const int &index ) const { return mChildren[index]; }
     BloomNodeRef getChildById( const int &childId ) const;
 
     void setTransform(const ci::Matrix44f &transform) { mTransform = transform; /* copy OK */ }
@@ -58,7 +58,8 @@ public:
     ci::Vec2f localToGlobal(const ci::Vec2f pos);
     ci::Vec2f globalToLocal(const ci::Vec2f pos);    
     
-    // subclasses should mess with these, just draw/update yourself (privateDraw/Update draws children in correct order)
+    // subclasses should mess with these, just draw/update yourself (not children)
+    // (deepDraw/Update draws children in correct order)
     virtual void draw() {}
     virtual void update() {}
     virtual bool touchBegan(ci::app::TouchEvent::Touch touch) { return false; }
@@ -76,23 +77,22 @@ public:
     // if you have behaviors to toggle when things are visible or not, override these
     virtual void setVisible( bool visible = true ) { mVisible = visible; }
     virtual bool isVisible() { return mVisible; }
-    
-protected:
-    
-    // allow access to privateDraw from BloomScene::draw()
-    // FIXME: is there a better way to do this in C++?
-    friend class BloomScene;
-    
-    // recurse to children and call draw()
-    virtual void privateDraw();
 
+    // recurse to children and call draw()
+    // (public so it can be overridden, but generally considered internal)
+    virtual void deepDraw();
+    
     // recurse to children and call update()
-    virtual void privateUpdate();
+    // (public so it can be overridden, but generally considered internal)
+    virtual void deepUpdate();
     
     // recurse to children and call touchBegan/Moved/Ended
-    bool privateTouchBegan(ci::app::TouchEvent::Touch touch);
-    bool privateTouchMoved(ci::app::TouchEvent::Touch touch);
-    bool privateTouchEnded(ci::app::TouchEvent::Touch touch);
+    // (public so they can be overridden, but generally considered internal)
+    virtual bool deepTouchBegan(ci::app::TouchEvent::Touch touch);
+    virtual bool deepTouchMoved(ci::app::TouchEvent::Touch touch);
+    virtual bool deepTouchEnded(ci::app::TouchEvent::Touch touch);    
+    
+protected:
     
     // weakrefs because we don't "own" these, they're just convenient
     BloomNodeWeakRef mParent;

@@ -81,7 +81,7 @@ void BloomScene::draw()
         glMultMatrixf( getConcatenatedTransform() );    
         // draw children
         BOOST_FOREACH(BloomNodeRef node, mChildren) {
-            node->privateDraw();
+            node->deepDraw();
         }
         // dont' draw self or we'll recurse
         glPopMatrix();
@@ -93,7 +93,7 @@ void BloomScene::update()
     if (mVisible) {
         // update children
         BOOST_FOREACH(BloomNodeRef node, mChildren) {
-            node->privateUpdate();
+            node->deepUpdate();
         }
         // dont' update self or we'll recurse
     }
