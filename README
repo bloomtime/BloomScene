@@ -7,7 +7,3 @@ for version 2.
 
 Not really designed for 3D.
 
-The GUI components like Slider are still quite Planetary specific. They
-will need some adjustment (and samples, and texture images) to be more
-generally useful.
-

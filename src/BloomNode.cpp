@@ -6,6 +6,7 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#include <boost/foreach.hpp>
 #include "BloomNode.h"
 #include "BloomScene.h"
 #include "cinder/gl/gl.h"
@@ -33,15 +34,13 @@ void BloomNode::addChildAt( BloomNodeRef child, const int &index )
 
 void BloomNode::removeChild( BloomNodeRef child )
 {
-    for (std::vector<BloomNodeRef>::iterator i = mChildren.begin(); i != mChildren.end(); i++) {
-        if ( (*i) == child ) {
-            mChildren.erase( i );
-            child->removedFromScene(); // notify child that mRoot and mParent are about to be invalid
-            child->mParent = BloomNodeWeakRef();
-            child->mRoot = BloomSceneWeakRef();
-            break;
-        }
-    }    
+    std::vector<BloomNodeRef>::iterator i = std::find(mChildren.begin(), mChildren.end(), child);
+    if ( i != mChildren.end() ) {
+        mChildren.erase( i );
+        child->removedFromScene(); // notify child that mRoot and mParent are about to be invalid
+        child->mParent = BloomNodeWeakRef();
+        child->mRoot = BloomSceneWeakRef();
+    }
 }
 
 BloomNodeRef BloomNode::removeChildAt( int index )
@@ -55,7 +54,7 @@ BloomNodeRef BloomNode::removeChildAt( int index )
 
 BloomNodeRef BloomNode::getChildById( const int &childId ) const
 {
-    for (std::vector<BloomNodeRef>::const_iterator i = mChildren.begin(); i != mChildren.end(); i++) {
+    for (std::vector<BloomNodeRef>::const_iterator i = mChildren.begin(); i != mChildren.end(); ++i) {
         if ( (*i)->getId() == childId ) {
             return *i;
         }
@@ -69,8 +68,8 @@ void BloomNode::privateUpdate()
         // update self
         update();
         // update children
-        for (std::vector<BloomNodeRef>::const_iterator i = mChildren.begin(); i != mChildren.end(); i++) {
-            (*i)->privateUpdate();
+        BOOST_FOREACH(BloomNodeRef child, mChildren) {        
+            child->privateUpdate();
         }
     }
 }
@@ -83,8 +82,8 @@ void BloomNode::privateDraw()
         // draw self    
         draw();
         // draw children
-        for (std::vector<BloomNodeRef>::const_iterator i = mChildren.begin(); i != mChildren.end(); i++) {
-            (*i)->privateDraw();
+        BOOST_FOREACH(BloomNodeRef child, mChildren) {        
+            child->privateDraw();
         }
         glPopMatrix();
     }        
@@ -116,11 +115,10 @@ bool BloomNode::privateTouchBegan( TouchEvent::Touch touch )
     }
     bool consumed = false;
     // check children
-    for (std::vector<BloomNodeRef>::const_iterator j = mChildren.begin(); j != mChildren.end(); j++) {
-        BloomNodeRef childRef = *j;
-        if (childRef->privateTouchBegan(touch)) {
+    BOOST_FOREACH(BloomNodeRef child, mChildren) {
+        if (child->privateTouchBegan(touch)) {
             consumed = true;
-            mActiveTouches[touch.getId()] = childRef;
+            mActiveTouches[touch.getId()] = child;
             break; // first child wins (touch can't affect more than one child node)
         }
     }    

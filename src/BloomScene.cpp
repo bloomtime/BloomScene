@@ -6,6 +6,7 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#include <boost/foreach.hpp>
 #include "BloomScene.h"
 #include "cinder/app/AppCocoaTouch.h"
 #include "cinder/gl/gl.h"
@@ -45,8 +46,8 @@ BloomScene::~BloomScene()
 bool BloomScene::touchesBegan( TouchEvent event )
 {
     bool consumed = true;
-    for (std::vector<TouchEvent::Touch>::const_iterator i = event.getTouches().begin(); i != event.getTouches().end(); i++) {
-        consumed = privateTouchBegan(*i) && consumed; // recurses to children
+    BOOST_FOREACH(TouchEvent::Touch touch, event.getTouches()) {
+        consumed = privateTouchBegan( touch ) && consumed; // recurses to children
     }    
     return consumed; // only true if all touches were consumed
 }
@@ -54,8 +55,8 @@ bool BloomScene::touchesBegan( TouchEvent event )
 bool BloomScene::touchesMoved( TouchEvent event )
 {
     bool consumed = true;
-    for (std::vector<TouchEvent::Touch>::const_iterator i = event.getTouches().begin(); i != event.getTouches().end(); i++) {
-        consumed = privateTouchMoved(*i) && consumed; // recurses to children
+    BOOST_FOREACH(TouchEvent::Touch touch, event.getTouches()) {
+        consumed = privateTouchMoved( touch ) && consumed; // recurses to children
     }
     return consumed; // only true if all touches were consumed
 }
@@ -63,8 +64,8 @@ bool BloomScene::touchesMoved( TouchEvent event )
 bool BloomScene::touchesEnded( TouchEvent event )
 {
     bool consumed = true;
-    for (std::vector<TouchEvent::Touch>::const_iterator i = event.getTouches().begin(); i != event.getTouches().end(); i++) {
-        consumed = privateTouchEnded(*i) && consumed; // recurses to children
+    BOOST_FOREACH(TouchEvent::Touch touch, event.getTouches()) {
+        consumed = privateTouchEnded( touch ) && consumed; // recurses to children
     }    
     return consumed; // only true if all touches were consumed
 }
@@ -80,8 +81,8 @@ void BloomScene::draw()
         glPushMatrix();
         glMultMatrixf( getConcatenatedTransform() );    
         // draw children
-        for (std::vector<BloomNodeRef>::const_iterator i = mChildren.begin(); i != mChildren.end(); i++) {
-            (*i)->privateDraw();
+        BOOST_FOREACH(BloomNodeRef node, mChildren) {
+            node->privateDraw();
         }
         // dont' draw self or we'll recurse
         glPopMatrix();
@@ -92,8 +93,8 @@ void BloomScene::update()
 {
     if (mVisible) {
         // update children
-        for (std::vector<BloomNodeRef>::const_iterator i = mChildren.begin(); i != mChildren.end(); i++) {
-            (*i)->privateUpdate();
+        BOOST_FOREACH(BloomNodeRef node, mChildren) {
+            node->privateUpdate();
         }
         // dont' update self or we'll recurse
     }
