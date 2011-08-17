@@ -182,7 +182,7 @@ bool BloomNode::deepTouchEnded( TouchEvent::Touch touch )
             }
         }
         else {
-            consumed = nodeRef->deepTouchEnded( touch );
+            consumed = node->deepTouchEnded( touch );
         }
         mActiveTouches.erase(touch.getId());
     }
