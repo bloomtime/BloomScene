@@ -46,7 +46,7 @@ bool BloomScene::touchesBegan( TouchEvent event )
 {
     bool consumed = true;
     BOOST_FOREACH(TouchEvent::Touch touch, event.getTouches()) {
-        consumed = privateTouchBegan( touch ) && consumed; // recurses to children
+        consumed = deepTouchBegan( touch ) && consumed; // recurses to children
     }    
     return consumed; // only true if all touches were consumed
 }
@@ -55,7 +55,7 @@ bool BloomScene::touchesMoved( TouchEvent event )
 {
     bool consumed = true;
     BOOST_FOREACH(TouchEvent::Touch touch, event.getTouches()) {
-        consumed = privateTouchMoved( touch ) && consumed; // recurses to children
+        consumed = deepTouchMoved( touch ) && consumed; // recurses to children
     }
     return consumed; // only true if all touches were consumed
 }
@@ -64,7 +64,7 @@ bool BloomScene::touchesEnded( TouchEvent event )
 {
     bool consumed = true;
     BOOST_FOREACH(TouchEvent::Touch touch, event.getTouches()) {
-        consumed = privateTouchEnded( touch ) && consumed; // recurses to children
+        consumed = deepTouchEnded( touch ) && consumed; // recurses to children
     }    
     return consumed; // only true if all touches were consumed
 }

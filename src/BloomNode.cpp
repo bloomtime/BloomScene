@@ -108,17 +108,17 @@ Vec2f BloomNode::globalToLocal(const Vec2f pos)
     return (invMtx * Vec3f(pos.x,pos.y,0)).xy();    
 }
 
-bool BloomNode::privateTouchBegan( TouchEvent::Touch touch )
+bool BloomNode::deepTouchBegan( TouchEvent::Touch touch )
 {
     if (!mVisible) {
         return false;
     }
     bool consumed = false;
     // check children
-    BOOST_FOREACH(BloomNodeRef child, mChildren) {
-        if (child->privateTouchBegan(touch)) {
+    BOOST_FOREACH(BloomNodeRef node, mChildren) {
+        if (node->deepTouchBegan(touch)) {
             consumed = true;
-            mActiveTouches[touch.getId()] = child;
+            mActiveTouches[touch.getId()] = node;
             break; // first child wins (touch can't affect more than one child node)
         }
     }    
@@ -136,7 +136,7 @@ bool BloomNode::privateTouchBegan( TouchEvent::Touch touch )
     return consumed;
 }
 
-bool BloomNode::privateTouchMoved( TouchEvent::Touch touch )
+bool BloomNode::deepTouchMoved( TouchEvent::Touch touch )
 {
     if (!mVisible) {
         return false;
@@ -145,24 +145,24 @@ bool BloomNode::privateTouchMoved( TouchEvent::Touch touch )
     // if they returned true for the touch with the same ID in touchesBegan
     bool consumed = false;
     if ( mActiveTouches.find(touch.getId()) != mActiveTouches.end() ) {
-        BloomNodeRef nodeRef = mActiveTouches[touch.getId()];
-        if (nodeRef->getId() == this->getId()) {
+        BloomNodeRef node = mActiveTouches[touch.getId()];
+        if (node->getId() == this->getId()) {
             // check self
             consumed = touchMoved(touch);
             if (consumed) {
                 if ( BloomSceneRef root = mRoot.lock() ) {
-                    root->onBloomNodeTouchMoved(nodeRef);
+                    root->onBloomNodeTouchMoved( node );
                 }
             }
         }
         else {
-            consumed = nodeRef->privateTouchMoved(touch);
+            consumed = node->deepTouchMoved( touch );
         }
     }
     return consumed;
 }
 
-bool BloomNode::privateTouchEnded( TouchEvent::Touch touch )
+bool BloomNode::deepTouchEnded( TouchEvent::Touch touch )
 {
     if (!mVisible) {
         return false;
@@ -171,18 +171,18 @@ bool BloomNode::privateTouchEnded( TouchEvent::Touch touch )
     // if they returned true for the touch with the same ID in touchesBegan
     bool consumed = false;
     if ( mActiveTouches.find(touch.getId()) != mActiveTouches.end() ) {
-        BloomNodeRef nodeRef = mActiveTouches[touch.getId()];
-        if (nodeRef->getId() == this->getId()) {
+        BloomNodeRef node = mActiveTouches[touch.getId()];
+        if (node->getId() == this->getId()) {
             // check self
             consumed = touchEnded(touch);
             if (consumed) {
                 if ( BloomSceneRef root = mRoot.lock() ) {
-                    root->onBloomNodeTouchEnded(nodeRef);
+                    root->onBloomNodeTouchEnded( node );
                 }
             }
         }
         else {
-            consumed = nodeRef->privateTouchEnded(touch);
+            consumed = nodeRef->deepTouchEnded( touch );
         }
         mActiveTouches.erase(touch.getId());
     }
