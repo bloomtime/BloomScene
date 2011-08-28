@@ -77,14 +77,15 @@ Matrix44f BloomScene::getConcatenatedTransform() const
 void BloomScene::draw()
 {
     if (mVisible) {
-        glPushMatrix();
-        glMultMatrixf( getConcatenatedTransform() );    
+
+		gl::setMatricesWindow( mApp->getWindowSize() ); 
+        
         // draw children
         BOOST_FOREACH(BloomNodeRef node, mChildren) {
             node->deepDraw();
         }
+        
         // dont' draw self or we'll recurse
-        glPopMatrix();
     }
 }
 
