@@ -26,7 +26,7 @@ OrientationNode::OrientationNode( OrientationHelper *orientationHelper ):
     mTargetInterfaceSize(0.0f,0.0f),
     mTargetInterfaceAngle(0.0f),
     mLastOrientationChangeTime(0.0f),
-    mOrientationAnimationDuration(0.25f),
+    mOrientationAnimationDuration(0.3f),
     mPrevInterfaceAngle(0.0f),
     mPrevInterfaceSize(0.0f,0.0f),
     mEnableAnimation(true),
