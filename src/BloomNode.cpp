@@ -99,13 +99,13 @@ Matrix44f BloomNode::getConcatenatedTransform() const
 
 Vec2f BloomNode::localToGlobal( const Vec2f &pos )
 {
-    return (getConcatenatedTransform() * Vec3f( pos.x, pos.y, 0 )).xy();
+    return (getConcatenatedTransform() * Vec3f( pos.x, pos.y, 0)).xy();
 }
 
 Vec2f BloomNode::globalToLocal( const Vec2f &pos )
 {
     Matrix44f invMtx = getConcatenatedTransform().inverted();
-    return (invMtx * Vec3f( pos.x, pos.y, 0)).xy();    
+    return (invMtx * Vec3f(pos.x,pos.y,0)).xy();    
 }
 
 bool BloomNode::deepTouchBegan( TouchEvent::Touch touch )
@@ -127,9 +127,7 @@ bool BloomNode::deepTouchBegan( TouchEvent::Touch touch )
         if (touchBegan(touch)) {
             BloomNodeRef thisRef = shared_from_this();
             mActiveTouches[touch.getId()] = thisRef;
-            if ( BloomSceneRef root = mRoot.lock() ) {
-                root->onBloomNodeTouchBegan(thisRef);
-            }
+            dispatchTouchBegan( BloomSceneEventRef( new BloomSceneEvent( thisRef, touch ) ) );
             consumed = true;
         }
     }
@@ -150,9 +148,7 @@ bool BloomNode::deepTouchMoved( TouchEvent::Touch touch )
             // check self
             consumed = touchMoved(touch);
             if (consumed) {
-                if ( BloomSceneRef root = mRoot.lock() ) {
-                    root->onBloomNodeTouchMoved( node );
-                }
+                dispatchTouchMoved( BloomSceneEventRef( new BloomSceneEvent( node, touch ) ) );
             }
         }
         else {
@@ -176,9 +172,7 @@ bool BloomNode::deepTouchEnded( TouchEvent::Touch touch )
             // check self
             consumed = touchEnded(touch);
             if (consumed) {
-                if ( BloomSceneRef root = mRoot.lock() ) {
-                    root->onBloomNodeTouchEnded( node );
-                }
+                dispatchTouchEnded( BloomSceneEventRef( new BloomSceneEvent( node, touch ) ) );
             }
         }
         else {
@@ -202,4 +196,28 @@ bool BloomNode::deepHitTest( const Vec2f &screenPos )
         return hitTest( screenPos );
     }
     return false;
+}
+
+void BloomNode::dispatchTouchBegan( BloomSceneEventRef eventRef )
+{ 
+    mCbTouchBegan.call( eventRef );
+    if (BloomNodeRef parent = getParent()) {
+        parent->dispatchTouchBegan( eventRef );
+    }
+}
+
+void BloomNode::dispatchTouchMoved( BloomSceneEventRef eventRef )
+{ 
+    mCbTouchMoved.call( eventRef ); 
+    if (BloomNodeRef parent = getParent()) {
+        parent->dispatchTouchMoved( eventRef );
+    }
+}
+
+void BloomNode::dispatchTouchEnded( BloomSceneEventRef eventRef )
+{ 
+    mCbTouchEnded.call( eventRef ); 
+    if (BloomNodeRef parent = getParent()) {
+        parent->dispatchTouchEnded( eventRef );
+    }
 }

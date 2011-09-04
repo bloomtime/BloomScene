@@ -25,8 +25,8 @@ BloomScene::BloomScene( AppCocoaTouch *app ):
     mApp( app ), 
     mInterfaceSize( 0.0f, 0.0f )
 {
-    mParent = BloomNodeRef();     // NULL, we are the parent (crash rather than recurse)
-    mRoot = BloomSceneRef(); // NULL, will be set in create() because we are the root
+    mParent = BloomNodeRef(); // NULL, we are the parent (crash rather than recurse)
+    mRoot = BloomSceneRef();  // NULL, will be set in create() because we are the root
     
     cbTouchesBegan = mApp->registerTouchesBegan( this, &BloomScene::touchesBegan );
     cbTouchesMoved = mApp->registerTouchesMoved( this, &BloomScene::touchesMoved );

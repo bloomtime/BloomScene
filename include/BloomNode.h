@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include "cinder/Cinder.h"
+#include "cinder/Function.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/Matrix.h"
 
@@ -26,6 +27,23 @@ typedef std::shared_ptr<BloomNode> BloomNodeRef;
 // for avoiding circular refs:
 typedef std::weak_ptr<BloomScene> BloomSceneWeakRef;
 typedef std::weak_ptr<BloomNode> BloomNodeWeakRef;
+
+class BloomSceneEvent
+{
+public:
+    BloomSceneEvent( BloomNodeRef nodeRef, ci::app::TouchEvent::Touch touch ): mNodeRef(nodeRef), mTouch(touch) {}
+    ~BloomSceneEvent() {}
+
+    BloomNodeRef getNodeRef() { return mNodeRef; }
+    ci::app::TouchEvent::Touch getTouch() { return mTouch; }    
+    
+private:
+    BloomNodeRef mNodeRef;
+    ci::app::TouchEvent::Touch mTouch;
+    
+};
+
+typedef std::shared_ptr<BloomSceneEvent> BloomSceneEventRef;
 
 class BloomNode : public std::enable_shared_from_this<BloomNode> {
 
@@ -120,6 +138,33 @@ public:
     // override this if you want to skip hitTesting children
     virtual bool deepHitTest( const ci::Vec2f &screenPos );
     
+// EVENT STUFF
+    
+	template<typename T>
+    ci::CallbackId registerTouchBegan( T *obj, bool (T::*callback)(BloomSceneEventRef) )
+	{
+		return mCbTouchBegan.registerCb(std::bind1st(std::mem_fun(callback), obj));
+	}    
+	template<typename T>
+    ci::CallbackId registerTouchMoved( T *obj, bool (T::*callback)(BloomSceneEventRef) )
+	{
+		return mCbTouchMoved.registerCb(std::bind1st(std::mem_fun(callback), obj));
+	}    
+	template<typename T>
+    ci::CallbackId registerTouchEnded( T *obj, bool (T::*callback)(BloomSceneEventRef) )
+	{
+		return mCbTouchEnded.registerCb(std::bind1st(std::mem_fun(callback), obj));
+	}
+	
+    void unregisterTouchBegan( ci::CallbackId cbId ) { mCbTouchBegan.unregisterCb( cbId ); }
+    void unregisterTouchMoved( ci::CallbackId cbId ) { mCbTouchMoved.unregisterCb( cbId ); }
+    void unregisterTouchEnded( ci::CallbackId cbId ) { mCbTouchEnded.unregisterCb( cbId ); }
+    
+    // bubbles events up to parents...
+    void dispatchTouchBegan( BloomSceneEventRef eventRef );
+    void dispatchTouchMoved( BloomSceneEventRef eventRef );
+    void dispatchTouchEnded( BloomSceneEventRef eventRef );
+    
 protected:
     
     // weakrefs because we don't "own" these, they're just convenient
@@ -140,4 +185,9 @@ protected:
 
     // for generating IDs:
     static int sNextNodeId;
+    
+    // for event passing
+	ci::CallbackMgr<bool(BloomSceneEventRef)> mCbTouchBegan;
+	ci::CallbackMgr<bool(BloomSceneEventRef)> mCbTouchMoved;
+	ci::CallbackMgr<bool(BloomSceneEventRef)> mCbTouchEnded;
 };

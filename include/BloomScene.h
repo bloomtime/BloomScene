@@ -32,8 +32,7 @@ public:
     void setInterfaceSize( ci::Vec2f interfaceSize ) { mInterfaceSize = interfaceSize; }
     
     // BloomScene draw/update starts the chain off, very much does *not* draw/update itself :)
-    virtual void draw();
-    virtual void update();
+    void draw();
     
     // override from BloomNode to stop infinite mParent recursion
     virtual ci::Matrix44f getConcatenatedTransform() const;    
@@ -49,11 +48,6 @@ protected:
     ci::Vec2f mInterfaceSize;    
     
     ci::CallbackId cbTouchesBegan, cbTouchesMoved, cbTouchesEnded;
-    
-	ci::CallbackMgr<bool(BloomNodeRef)> mCbBloomNodeTouchBegan;
-	ci::CallbackMgr<bool(BloomNodeRef)> mCbBloomNodeTouchMoved;
-	ci::CallbackMgr<bool(BloomNodeRef)> mCbBloomNodeTouchEnded;
-
     
 private:
   
