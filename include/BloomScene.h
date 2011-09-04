@@ -36,49 +36,7 @@ public:
     virtual void update();
     
     // override from BloomNode to stop infinite mParent recursion
-    virtual ci::Matrix44f getConcatenatedTransform() const;
-    
-	template<typename T>
-    ci::CallbackId registerBloomNodeTouchBegan( T *obj, bool (T::*callback)(BloomNodeRef) )
-	{
-		return mCbBloomNodeTouchBegan.registerCb(std::bind1st(std::mem_fun(callback), obj));
-	}    
-	template<typename T>
-    ci::CallbackId registerBloomNodeTouchMoved( T *obj, bool (T::*callback)(BloomNodeRef) )
-	{
-		return mCbBloomNodeTouchMoved.registerCb(std::bind1st(std::mem_fun(callback), obj));
-	}    
-	template<typename T>
-    ci::CallbackId registerBloomNodeTouchEnded( T *obj, bool (T::*callback)(BloomNodeRef) )
-	{
-		return mCbBloomNodeTouchEnded.registerCb(std::bind1st(std::mem_fun(callback), obj));
-	}    
-    void unregisterBloomNodeTouchBegan( ci::CallbackId cbId )
-	{
-		mCbBloomNodeTouchBegan.unregisterCb( cbId );
-	}    
-    void unregisterBloomNodeTouchMoved( ci::CallbackId cbId )
-	{
-		mCbBloomNodeTouchMoved.unregisterCb( cbId );
-	}    
-    void unregisterBloomNodeTouchEnded( ci::CallbackId cbId )
-	{
-		mCbBloomNodeTouchEnded.unregisterCb( cbId );
-	}  
-    
-    // FIXME: is there a better pattern for this (BloomNode handles own events? bubbling?)
-    void onBloomNodeTouchBegan( BloomNodeRef nodeRef )
-	{
-		mCbBloomNodeTouchBegan.call( nodeRef );
-	}    
-    void onBloomNodeTouchMoved( BloomNodeRef nodeRef )
-	{
-		mCbBloomNodeTouchMoved.call( nodeRef );
-	}    
-    void onBloomNodeTouchEnded( BloomNodeRef nodeRef )
-	{
-		mCbBloomNodeTouchEnded.call( nodeRef );
-	}      
+    virtual ci::Matrix44f getConcatenatedTransform() const;    
     
 protected:
 

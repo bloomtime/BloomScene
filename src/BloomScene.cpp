@@ -76,26 +76,5 @@ Matrix44f BloomScene::getConcatenatedTransform() const
 
 void BloomScene::draw()
 {
-    if (mVisible) {
-
-		gl::setMatricesWindow( mApp->getWindowSize() ); 
-        
-        // draw children
-        BOOST_FOREACH(BloomNodeRef node, mChildren) {
-            node->deepDraw();
-        }
-        
-        // dont' draw self or we'll recurse
-    }
-}
-
-void BloomScene::update()
-{
-    if (mVisible) {
-        // update children
-        BOOST_FOREACH(BloomNodeRef node, mChildren) {
-            node->deepUpdate();
-        }
-        // dont' update self or we'll recurse
-    }
+    gl::setMatricesWindow( mApp->getWindowSize() ); 
 }
