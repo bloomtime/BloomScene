@@ -97,15 +97,15 @@ Matrix44f BloomNode::getConcatenatedTransform() const
     return mTransform;
 }
 
-Vec2f BloomNode::localToGlobal(const Vec2f pos)
+Vec2f BloomNode::localToGlobal( const Vec2f &pos )
 {
-    return (getConcatenatedTransform() * Vec3f(pos.x,pos.y,0)).xy();
+    return (getConcatenatedTransform() * Vec3f( pos.x, pos.y, 0 )).xy();
 }
 
-Vec2f BloomNode::globalToLocal(const Vec2f pos)
+Vec2f BloomNode::globalToLocal( const Vec2f &pos )
 {
     Matrix44f invMtx = getConcatenatedTransform().inverted();
-    return (invMtx * Vec3f(pos.x,pos.y,0)).xy();    
+    return (invMtx * Vec3f( pos.x, pos.y, 0)).xy();    
 }
 
 bool BloomNode::deepTouchBegan( TouchEvent::Touch touch )
@@ -187,4 +187,19 @@ bool BloomNode::deepTouchEnded( TouchEvent::Touch touch )
         mActiveTouches.erase(touch.getId());
     }
     return consumed;
+}
+
+bool BloomNode::deepHitTest( const Vec2f &screenPos )
+{
+    if (mVisible) {
+        // test children
+        BOOST_FOREACH(BloomNodeRef child, mChildren) {        
+            if ( child->deepHitTest( screenPos ) ) {
+                return true;
+            }
+        }
+        // test self
+        return hitTest( screenPos );
+    }
+    return false;
 }
