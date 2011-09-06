@@ -20,7 +20,7 @@ void BloomNode::addChild( BloomNodeRef child )
 {
     mChildren.push_back( child );
     child->mParent = BloomNodeWeakRef( shared_from_this() );
-    child->mRoot = mRoot;    
+    child->mRoot = mRoot;
     child->addedToScene(); // notify child that mRoot and mParent are set
 }
 

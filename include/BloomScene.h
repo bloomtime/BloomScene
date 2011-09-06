@@ -34,9 +34,6 @@ public:
     // BloomScene draw/update starts the chain off, very much does *not* draw/update itself :)
     void draw();
     
-    // override from BloomNode to stop infinite mParent recursion
-    virtual ci::Matrix44f getConcatenatedTransform() const;    
-    
 protected:
 
     bool touchesBegan( ci::app::TouchEvent event );

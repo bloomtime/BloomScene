@@ -69,11 +69,6 @@ bool BloomScene::touchesEnded( TouchEvent event )
     return consumed; // only true if all touches were consumed
 }
 
-Matrix44f BloomScene::getConcatenatedTransform() const
-{
-    return mTransform;
-}
-
 void BloomScene::draw()
 {
     gl::setMatricesWindow( mApp->getWindowSize() ); 
