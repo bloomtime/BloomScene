@@ -45,11 +45,24 @@ void BloomNode::removeChild( BloomNodeRef child )
 
 BloomNodeRef BloomNode::removeChildAt( const int &index )
 {
-    BloomNodeRef child = *mChildren.erase( mChildren.begin() + index );
-    child->removedFromScene(); // notify child that mRoot and mParent are about to be invalid    
-    child->mParent = BloomNodeRef();
-    child->mRoot = BloomSceneRef();
-    return child;
+    if (index < mChildren.size()) {
+        std::vector<BloomNodeRef>::iterator i = mChildren.begin() + index;
+        BloomNodeRef child = *i;
+        mChildren.erase( i );
+        child->removedFromScene(); // notify child that mRoot and mParent are about to be invalid    
+        child->mParent = BloomNodeRef();
+        child->mRoot = BloomSceneRef();
+        return child;
+    }
+    return BloomNodeRef();
+}
+
+void BloomNode::removeChildren()
+{
+    int numChildren = getNumChildren();
+    for (int i = numChildren - 1; i >= 0; i--) {
+        removeChildAt(i);
+    }    
 }
 
 BloomNodeRef BloomNode::getChildById( const int &childId ) const
@@ -127,7 +140,7 @@ bool BloomNode::deepTouchBegan( TouchEvent::Touch touch )
         if (touchBegan(touch)) {
             BloomNodeRef thisRef = shared_from_this();
             mActiveTouches[touch.getId()] = thisRef;
-            dispatchTouchBegan( BloomSceneEventRef( new BloomSceneEvent( thisRef, touch ) ) );
+            dispatchTouchBegan( BloomSceneEventRef( new BloomSceneEvent( thisRef, thisRef, touch ) ) );
             consumed = true;
         }
     }
@@ -148,7 +161,7 @@ bool BloomNode::deepTouchMoved( TouchEvent::Touch touch )
             // check self
             consumed = touchMoved(touch);
             if (consumed) {
-                dispatchTouchMoved( BloomSceneEventRef( new BloomSceneEvent( node, touch ) ) );
+                dispatchTouchMoved( BloomSceneEventRef( new BloomSceneEvent( node, node, touch ) ) );
             }
         }
         else {
@@ -172,7 +185,7 @@ bool BloomNode::deepTouchEnded( TouchEvent::Touch touch )
             // check self
             consumed = touchEnded(touch);
             if (consumed) {
-                dispatchTouchEnded( BloomSceneEventRef( new BloomSceneEvent( node, touch ) ) );
+                dispatchTouchEnded( BloomSceneEventRef( new BloomSceneEvent( node, node, touch ) ) );
             }
         }
         else {
@@ -200,24 +213,42 @@ bool BloomNode::deepHitTest( const Vec2f &screenPos )
 
 void BloomNode::dispatchTouchBegan( BloomSceneEventRef eventRef )
 { 
-    mCbTouchBegan.call( eventRef );
-    if (BloomNodeRef parent = getParent()) {
-        parent->dispatchTouchBegan( eventRef );
+	bool handled = false;
+	for( CallbackMgr<bool (BloomSceneEventRef)>::iterator cbIter = mCbTouchBegan.begin(); ( cbIter != mCbTouchBegan.end() ) && ( ! handled ); ++cbIter ) {
+		handled = (cbIter->second)( eventRef );
     }
+	if( !handled )	{
+        if (BloomNodeRef parent = getParent()) {
+            eventRef->setSourceRef( parent );
+            parent->dispatchTouchBegan( eventRef );
+        }        
+    }    
 }
 
 void BloomNode::dispatchTouchMoved( BloomSceneEventRef eventRef )
 { 
-    mCbTouchMoved.call( eventRef ); 
-    if (BloomNodeRef parent = getParent()) {
-        parent->dispatchTouchMoved( eventRef );
+	bool handled = false;
+	for( CallbackMgr<bool (BloomSceneEventRef)>::iterator cbIter = mCbTouchMoved.begin(); ( cbIter != mCbTouchMoved.end() ) && ( ! handled ); ++cbIter ) {
+		handled = (cbIter->second)( eventRef );
     }
+	if( !handled )	{
+        if (BloomNodeRef parent = getParent()) {
+            eventRef->setSourceRef( parent );    
+            parent->dispatchTouchMoved( eventRef );
+        }        
+    }    
 }
 
 void BloomNode::dispatchTouchEnded( BloomSceneEventRef eventRef )
 { 
-    mCbTouchEnded.call( eventRef ); 
-    if (BloomNodeRef parent = getParent()) {
-        parent->dispatchTouchEnded( eventRef );
+	bool handled = false;
+	for( CallbackMgr<bool (BloomSceneEventRef)>::iterator cbIter = mCbTouchEnded.begin(); ( cbIter != mCbTouchEnded.end() ) && ( ! handled ); ++cbIter ) {
+		handled = (cbIter->second)( eventRef );
+    }
+	if( !handled )	{
+        if (BloomNodeRef parent = getParent()) {
+            eventRef->setSourceRef( parent );
+            parent->dispatchTouchEnded( eventRef );
+        }        
     }
 }

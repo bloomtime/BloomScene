@@ -31,14 +31,30 @@ typedef std::weak_ptr<BloomNode> BloomNodeWeakRef;
 class BloomSceneEvent
 {
 public:
-    BloomSceneEvent( BloomNodeRef nodeRef, ci::app::TouchEvent::Touch touch ): mNodeRef(nodeRef), mTouch(touch) {}
+    
+    BloomSceneEvent( BloomNodeRef targetRef, BloomNodeRef sourceRef, ci::app::TouchEvent::Touch touch ): 
+        mTargetRef(targetRef),
+        mSourceRef(sourceRef), 
+        mTouch(touch) {}
+    
     ~BloomSceneEvent() {}
 
-    BloomNodeRef getNodeRef() { return mNodeRef; }
+    // the node this event happened to
+    BloomNodeRef getTargetRef() { return mTargetRef; }
+
+    // the node that dispatched this event
+    BloomNodeRef getSourceRef() { return mSourceRef; }
+
+    // the raw screen-space touch that triggered this event
     ci::app::TouchEvent::Touch getTouch() { return mTouch; }    
+
+    void setTargetRef( BloomNodeRef targetRef ) { mTargetRef = targetRef; }
+    void setSourceRef( BloomNodeRef sourceRef ) { mSourceRef = sourceRef; }    
+    void setTouch( ci::app::TouchEvent::Touch touch ) { mTouch = touch; }    
     
 private:
-    BloomNodeRef mNodeRef;
+    
+    BloomNodeRef mTargetRef, mSourceRef;
     ci::app::TouchEvent::Touch mTouch;
     
 };
@@ -62,6 +78,7 @@ public:
     void addChild( BloomNodeRef child );
     void addChildAt( BloomNodeRef child, const int &index );
     void removeChild( BloomNodeRef child );
+    void removeChildren();
     BloomNodeRef removeChildAt( const int &index );
     int getNumChildren() const { return mChildren.size(); }
     BloomNodeRef getChildAt( const int &index ) const { return mChildren[index]; }
