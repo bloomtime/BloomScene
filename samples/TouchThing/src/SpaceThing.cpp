@@ -13,7 +13,7 @@ using namespace ci;
 
 SpaceThing::~SpaceThing()
 {
-    console() << "destructed space thing " << getId() << std::endl;
+    std::cout << "destructed space thing " << getId() << std::endl;
 }
 
 void SpaceThing::update()
