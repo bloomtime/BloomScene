@@ -27,12 +27,10 @@ public:
     static BloomSceneRef create( ci::app::AppCocoaTouch *app );
     
     virtual ~BloomScene();
-    
+
+    // these are used when handling orientation, by default they will just be the app window size
     ci::Vec2f getInterfaceSize() { return mInterfaceSize; }
     void setInterfaceSize( ci::Vec2f interfaceSize ) { mInterfaceSize = interfaceSize; }
-    
-    // BloomScene draw/update starts the chain off, very much does *not* draw/update itself :)
-    void draw();
     
 protected:
 
@@ -42,7 +40,7 @@ protected:
     
     ci::app::AppCocoaTouch *mApp;
     
-    ci::Vec2f mInterfaceSize;    
+    ci::Vec2f mInterfaceSize;
     
     ci::CallbackId cbTouchesBegan, cbTouchesMoved, cbTouchesEnded;
     

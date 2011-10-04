@@ -68,8 +68,3 @@ bool BloomScene::touchesEnded( TouchEvent event )
     }    
     return consumed; // only true if all touches were consumed
 }
-
-void BloomScene::draw()
-{
-    gl::setMatricesWindow( mApp->getWindowSize() ); 
-}
