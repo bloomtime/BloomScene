@@ -7,8 +7,10 @@ for version 2.
 
 Not really designed for 3D.
 
-Overly basic demo at https://gist.github.com/45101e6592647e276a81
+Overly basic demo in Samples/SpaceThing - just set the CINDER_PATH and 
+it should be good to go. 
 
-You'll need to remove OrientationNode from your source tree unless you have
-https://github.com/bloomtime/CinderOrientation loaded too.
+You'll need to remove OrientationNode from your source tree unless you 
+have https://github.com/bloomtime/CinderOrientation loaded too. Working 
+on it!
 
