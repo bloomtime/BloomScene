@@ -3,10 +3,14 @@ Scene graph library derived from Planetary's 2D GUI.
 Can handle orientation animation and things like that.
 
 Currently still in flux, hoping to implement things like event bubbling
-for version 2.
+for version 2.  Not really designed for 3D.
 
-Not really designed for 3D.
-
-Overly basic demo in Samples/SpaceThing - just set the CINDER_PATH and 
+Overly basic demos in the samples folder - just set the CINDER_PATH and 
 it should be good to go. 
+
+To add to a new project create a group called "Blocks" and then add the
+BloomScene folder to it and remove the .git, README and samples. 
+
+If you don't need OrientationNode just remove it from your project. If
+you do need it then set your app to be Objective-C++ or it won't compile.
 
