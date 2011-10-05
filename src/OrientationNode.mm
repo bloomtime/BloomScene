@@ -8,20 +8,19 @@
 
 #include "cinder/app/AppCocoaTouch.h" // for getElapsedSeconds, getWindowSize
 #include "cinder/gl/gl.h"
-#include "OrientationHelper.h"
 #include "OrientationNode.h"
 #include "BloomScene.h"
 
 using namespace ci;
-using namespace ci::app;
 
-OrientationNodeRef OrientationNode::create( OrientationHelper *orientationHelper )
+OrientationNodeRef OrientationNode::create()
 {
-    return OrientationNodeRef( new OrientationNode( orientationHelper ) );    
+    OrientationNodeRef nodeRef = OrientationNodeRef( new OrientationNode() );
+    setupNotifications( nodeRef );
+    return nodeRef;
 }
 
-OrientationNode::OrientationNode( OrientationHelper *orientationHelper ): 
-    mOrientationHelper(orientationHelper),
+OrientationNode::OrientationNode(): 
     mInterfaceAngle(0.0f),
     mTargetInterfaceSize(0.0f,0.0f),
     mTargetInterfaceAngle(0.0f),
@@ -32,20 +31,16 @@ OrientationNode::OrientationNode( OrientationHelper *orientationHelper ):
     mEnableAnimation(true),
     mCurrentlyAnimating(false)
 {
-    cbOrientationChanged = mOrientationHelper->registerOrientationChanged( this, &OrientationNode::orientationChanged );    
-    // initialize orientation *without animating*
-    setInterfaceOrientation( mOrientationHelper->getInterfaceOrientation(), false );
 }
 
 OrientationNode::~OrientationNode()
 {
-    mOrientationHelper->unregisterOrientationChanged( cbOrientationChanged );
+    // TODO: stopNotifications
 }
 
-bool OrientationNode::orientationChanged( OrientationEvent event )
+void OrientationNode::orientationChanged( const Orientation &orientation )
 {
-    setInterfaceOrientation( event.getInterfaceOrientation(), mEnableAnimation );
-    return false;
+    setInterfaceOrientation( orientation, mEnableAnimation );    
 }
 
 void OrientationNode::setInterfaceOrientation( const Orientation &orientation, bool animate )
@@ -132,13 +127,13 @@ void OrientationNode::update()
 float OrientationNode::getOrientationAngle( const Orientation &orientation )
 {
     switch (orientation) {
-        case LANDSCAPE_LEFT_ORIENTATION:
+        case LANDSCAPE_LEFT:
             return M_PI * 1.5f;
-        case UPSIDE_DOWN_PORTRAIT_ORIENTATION:
+        case UPSIDE_DOWN_PORTRAIT:
             return M_PI;
-        case LANDSCAPE_RIGHT_ORIENTATION:
+        case LANDSCAPE_RIGHT:
             return M_PI * 0.5f;
-        case PORTRAIT_ORIENTATION:
+        case PORTRAIT:
         default:
             return 0.0;
     }
@@ -147,15 +142,34 @@ float OrientationNode::getOrientationAngle( const Orientation &orientation )
 std::string OrientationNode::getOrientationDescription( const Orientation &orientation )
 {
     switch (orientation) {
-        case LANDSCAPE_LEFT_ORIENTATION:
-            return "LANDSCAPE_LEFT_ORIENTATION";
-        case UPSIDE_DOWN_PORTRAIT_ORIENTATION:
-            return "UPSIDE_DOWN_PORTRAIT_ORIENTATION";
-        case LANDSCAPE_RIGHT_ORIENTATION:
-            return "LANDSCAPE_RIGHT_ORIENTATION";
-        case PORTRAIT_ORIENTATION:
-            return "PORTRAIT_ORIENTATION";
+        case LANDSCAPE_LEFT:
+            return "LANDSCAPE_LEFT";
+        case UPSIDE_DOWN_PORTRAIT:
+            return "UPSIDE_DOWN_PORTRAIT";
+        case LANDSCAPE_RIGHT:
+            return "LANDSCAPE_RIGHT";
+        case PORTRAIT:
+            return "PORTRAIT";
         default:
-            return "UNKNOWN_ORIENTATION";
+            return "UNKNOWN";
     }
+}
+
+// not a member function, so that blocks work correctly
+void setupNotifications( OrientationNodeRef nodeRef )
+{
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"UIDeviceOrientationDidChangeNotification"
+                                                      object:nil 
+                                                       queue:nil 
+                                                  usingBlock: ^(NSNotification *notification) {
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        if (UIDeviceOrientationIsValidInterfaceOrientation(orientation)) {
+            nodeRef->orientationChanged(OrientationNode::Orientation(orientation));
+            // let's always make sure the task bar is shown on the correct side of the device            
+            [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientation(orientation);
+        }
+    }];
+    // use initial taskbar orientation to derive a valid interface orientation
+    nodeRef->setInterfaceOrientation( OrientationNode::Orientation([UIApplication sharedApplication].statusBarOrientation), false );
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];            
 }

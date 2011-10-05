@@ -7,62 +7,70 @@
 //
 
 #pragma once
+
+#include <UIKit/UIDevice.h> // importing this anywhere else means we have to set our app to be Objective-C++, sorry!
 #include <map>
 #include <string>
 #include "cinder/Function.h"
 #include "BloomNode.h"
-#include "Orientation.h" // can't forward declare enums
 
-// forward declare to avoid full include
-namespace cinder { namespace app {
-    class OrientationHelper;
-    class OrientationEvent;
-} }
-
+// forward declare
 class OrientationNode;
 typedef std::shared_ptr<OrientationNode> OrientationNodeRef;
+
+// declare this function outside of the class so that Objective-C blocks can be used
+void setupNotifications( OrientationNodeRef nodeRef );
+
 
 class OrientationNode : public BloomNode {
     
 public:
+
+    // map our own shorter constants to Apple's long ones :)
+    enum Orientation { 
+        PORTRAIT = UIDeviceOrientationPortrait, 
+        LANDSCAPE_LEFT = UIDeviceOrientationLandscapeLeft, 
+        UPSIDE_DOWN_PORTRAIT = UIDeviceOrientationPortraitUpsideDown, 
+        LANDSCAPE_RIGHT = UIDeviceOrientationLandscapeRight 
+        // note that Apple has face-up, face-down and unknown too, but we filter these out in our callback
+    };
     
-    static OrientationNodeRef create( ci::app::OrientationHelper *orientationHelper );
+    static OrientationNodeRef create();
     virtual ~OrientationNode();
-    
-    ci::app::Orientation getInterfaceOrientation() { return mInterfaceOrientation; }
-    void setInterfaceOrientation( const ci::app::Orientation &orientation, bool animate );
+        
+    Orientation getInterfaceOrientation() { return mInterfaceOrientation; }
+    void setInterfaceOrientation( const Orientation &orientation, bool animate = true );
     
     void enableAnimation( bool enable = true ) { mEnableAnimation = enable; }
     bool isAnimationEnabled() { return mEnableAnimation; }
     
+    // the current animation angle (can be animating)
     // useful for syncing 3D world to 2D UI animation
     float getInterfaceAngle() { return mInterfaceAngle; }
-    
-    // animate mRoot interfaceSize and this node's transform matrix
-    virtual void update();
-        
-protected:
-    
-    OrientationNode( ci::app::OrientationHelper *orientationHelper );
-    
-	bool orientationChanged( ci::app::OrientationEvent event );
-    
-    float getOrientationAngle( const ci::app::Orientation &orientation );
+
+    // the angle applied when the device is at this orientation
+    float getOrientationAngle( const Orientation &orientation );
     
     // useful for debugging
-    std::string getOrientationDescription( const ci::app::Orientation &orientation );
-        
-    ci::app::OrientationHelper *mOrientationHelper;
+    std::string getOrientationDescription( const Orientation &orientation );
+
+    // animate mRoot interfaceSize and this node's transform matrix
+    virtual void update();
+
+    // TODO: make private and make setupNotifications a friend function?
+    void orientationChanged( const Orientation &orientation );
+
+protected:
     
-    ci::CallbackId cbOrientationChanged;
-    
+    OrientationNode();
+            
     bool mEnableAnimation;
     bool mCurrentlyAnimating;
     
-    ci::app::Orientation mInterfaceOrientation;
-    float                mInterfaceAngle;       // animated, not always right-angle   
-    ci::Vec2f            mTargetInterfaceSize;  // depends on mInterfaceOrientation
-    float                mTargetInterfaceAngle; // normalized for shortest rotation animation
+    Orientation mInterfaceOrientation;
+    float       mInterfaceAngle;       // animated, not always right-angle   
+    ci::Vec2f   mTargetInterfaceSize;  // depends on mInterfaceOrientation
+    float       mTargetInterfaceAngle; // normalized for shortest rotation animation
     
     // for lerping:
     float mLastOrientationChangeTime;
