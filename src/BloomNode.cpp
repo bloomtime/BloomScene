@@ -43,9 +43,8 @@ void BloomNode::removeChild( BloomNodeRef child )
     std::vector<BloomNodeRef>::iterator i = std::find(mChildren.begin(), mChildren.end(), child);
     if ( i != mChildren.end() ) {
         mChildren.erase( i );
-        child->removedFromScene(); // notify child that mRoot and mParent are about to be invalid
         child->mParent = BloomNodeWeakRef();
-        child->mRoot = BloomSceneWeakRef();
+        child->deepSetRoot( BloomSceneRef() ); // clears root for all children
     }
 }
 
@@ -55,9 +54,8 @@ BloomNodeRef BloomNode::removeChildAt( const int &index )
         std::vector<BloomNodeRef>::iterator i = mChildren.begin() + index;
         BloomNodeRef child = *i;
         mChildren.erase( i );
-        child->removedFromScene(); // notify child that mRoot and mParent are about to be invalid    
         child->mParent = BloomNodeRef();
-        child->mRoot = BloomSceneRef();
+        child->deepSetRoot( BloomSceneRef() );
         return child;
     }
     return BloomNodeRef();
@@ -221,12 +219,18 @@ bool BloomNode::deepHitTest( const Vec2f &screenPos )
 
 void BloomNode::deepSetRoot( BloomSceneRef root )
 {
-    // set self
-    mRoot = root;
     BOOST_FOREACH(BloomNodeRef child, mChildren) {        
-        // propagate
+        // propagate to children first
         child->deepSetRoot( root );
     }
+    // and then set self
+    if (root) {
+        mRoot = root;
+        addedToScene(); // notify subclasses that mRoot and mParent are now valid     
+    } else {
+        removedFromScene(); // notify subclasses that mRoot and mParent are about to be invalid     
+        mRoot = BloomSceneWeakRef();
+    }    
 }
 
 void BloomNode::dispatchTouchBegan( BloomSceneEventRef eventRef )

@@ -33,19 +33,21 @@ void OrientationThingApp::setup()
     mBloomSceneRef = BloomScene::create( this );
     
     // add an orientation node that will automatically animate when the device is rotated
-    mOrientationNodeRef = OrientationNode::create( );
-    mBloomSceneRef->addChild( mOrientationNodeRef );
+    mOrientationNodeRef = OrientationNode::create();
     
     // add another node under the orientation node to handle centering:
-    mThingParentRef = BloomNodeRef( new BloomNode() );
-    mOrientationNodeRef->addChild( mThingParentRef );
+    mThingParentRef = BloomNodeRef( new BloomNode() ); // TODO: BloomNode::create()?
     
     // make a parent "planet":
-    SpaceThing* planet = new SpaceThing( 20.0f, 200.0f, 0.0f, 0.004f );
+    SpaceThingRef planet = SpaceThing::create( 20.0f, 200.0f, 0.0f, 0.004f );
     planet->registerTouchEnded( this, &OrientationThingApp::onPlanetTouchEnded );
     
     // must be added to scene before children are added to it (I should fix this!)
-    mThingParentRef->addChild( BloomNodeRef( planet ) );        
+    mThingParentRef->addChild( planet );        
+
+    mOrientationNodeRef->addChild( mThingParentRef );
+
+    mBloomSceneRef->addChild( mOrientationNodeRef );
 }
 
 bool OrientationThingApp::onPlanetTouchEnded( BloomSceneEventRef eventRef )
@@ -55,9 +57,9 @@ bool OrientationThingApp::onPlanetTouchEnded( BloomSceneEventRef eventRef )
     int numChildren = planet->getNumChildren();
     if (numChildren == 0) {
         // add some moons I guess :)
-        planet->addChild( BloomNodeRef( new SpaceThing( 5.0f, 75.0f, 0.4f, 0.006f ) ) );
-        planet->addChild( BloomNodeRef( new SpaceThing( 10.0f, 50.0f, 2.0f, 0.002f ) ) );
-        planet->addChild( BloomNodeRef( new SpaceThing( 8.0f, 60.0f, 4.3f, 0.01f ) ) );    
+        planet->addChild( SpaceThing::create( 5.0f, 75.0f, 0.4f, 0.006f ) );
+        planet->addChild( SpaceThing::create( 10.0f, 50.0f, 2.0f, 0.002f ) );
+        planet->addChild( SpaceThing::create( 8.0f, 60.0f, 4.3f, 0.01f ) );    
     }
     else {
         // clear children
