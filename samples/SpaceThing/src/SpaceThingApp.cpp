@@ -32,15 +32,15 @@ void SpaceThingApp::setup()
     mBloomSceneRef = BloomScene::create( this );
     
     // make a parent "planet":
-    SpaceThing* planet = new SpaceThing(20.0f, 200.0f, 0.0f, 0.04f);    
-    
-    // must be added to scene before children are added (I should fix this!)
-    mBloomSceneRef->addChild( BloomNodeRef( planet ) );    
-    
+    SpaceThingRef planet = SpaceThing::create(20.0f, 200.0f, 0.0f, 0.04f);    
+
     // some moons I guess :)
-    planet->addChild( BloomNodeRef( new SpaceThing( 5.0f, 75.0f, 0.4f, 0.06f ) ) );
-    planet->addChild( BloomNodeRef( new SpaceThing( 10.0f, 50.0f, 2.0f, 0.02f ) ) );
-    planet->addChild( BloomNodeRef( new SpaceThing( 8.0f, 60.0f, 4.3f, 0.1f ) ) );
+    planet->addChild( SpaceThing::create( 5.0f, 75.0f, 0.4f, 0.06f ) );
+    planet->addChild( SpaceThing::create( 10.0f, 50.0f, 2.0f, 0.02f ) );
+    planet->addChild( SpaceThing::create( 8.0f, 60.0f, 4.3f, 0.1f ) );
+
+    // and then add to the scene
+    mBloomSceneRef->addChild( planet );
 }
 
 void SpaceThingApp::touchesBegan( TouchEvent event )

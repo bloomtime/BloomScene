@@ -20,16 +20,22 @@ void BloomNode::addChild( BloomNodeRef child )
 {
     mChildren.push_back( child );
     child->mParent = BloomNodeWeakRef( shared_from_this() );
-    child->mRoot = mRoot;
-    child->addedToScene(); // notify child that mRoot and mParent are set
+    // if we have a root node, pass it on
+    if ( BloomSceneRef root = mRoot.lock() ) {
+        child->deepSetRoot( root );
+    }
+    // otherwise just wait, it will be set eventually
 }
 
 void BloomNode::addChildAt( BloomNodeRef child, const int &index )
 {
     mChildren.insert( mChildren.begin() + index, child );
     child->mParent = BloomNodeWeakRef( shared_from_this() );
-    child->mRoot = mRoot;
-    child->addedToScene(); // notify child that mRoot and mParent are set
+    // if we have a root node, pass it on
+    if ( BloomSceneRef root = mRoot.lock() ) {
+        child->deepSetRoot( root );
+    }
+    // otherwise just wait, it will be set eventually
 }
 
 void BloomNode::removeChild( BloomNodeRef child )
@@ -77,6 +83,7 @@ BloomNodeRef BloomNode::getChildById( const int &childId ) const
 
 void BloomNode::deepUpdate()
 {
+    //assert(mRoot.lock());
     if (mVisible) {
         // update self
         update();
@@ -89,6 +96,7 @@ void BloomNode::deepUpdate()
 
 void BloomNode::deepDraw()
 {
+    //assert(mRoot.lock());
     if (mVisible) {
         glPushMatrix();
         glMultMatrixf(mTransform); // FIXME only push/mult/pop if mTransform isn't identity
@@ -209,6 +217,16 @@ bool BloomNode::deepHitTest( const Vec2f &screenPos )
         return hitTest( screenPos );
     }
     return false;
+}
+
+void BloomNode::deepSetRoot( BloomSceneRef root )
+{
+    // set self
+    mRoot = root;
+    BOOST_FOREACH(BloomNodeRef child, mChildren) {        
+        // propagate
+        child->deepSetRoot( root );
+    }
 }
 
 void BloomNode::dispatchTouchBegan( BloomSceneEventRef eventRef )

@@ -31,7 +31,7 @@ typedef std::weak_ptr<BloomNode> BloomNodeWeakRef;
 class BloomSceneEvent
 {
 public:
-    
+
     BloomSceneEvent( BloomNodeRef targetRef, BloomNodeRef sourceRef, ci::app::TouchEvent::Touch touch ): 
         mTargetRef(targetRef),
         mSourceRef(sourceRef), 
@@ -154,6 +154,9 @@ public:
     // recurse to children and call hitTest
     // override this if you want to skip hitTesting children
     virtual bool deepHitTest( const ci::Vec2f &screenPos );
+    
+    // notify children that mRoot is valid
+    virtual void deepSetRoot( BloomSceneRef root );
     
 // EVENT STUFF
     

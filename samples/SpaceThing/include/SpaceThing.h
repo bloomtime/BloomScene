@@ -10,16 +10,16 @@
 #include "BloomNode.h"
 #include "cinder/Vector.h"
 
+typedef std::shared_ptr<class SpaceThing> SpaceThingRef;
+
 class SpaceThing : public BloomNode
 {
 public:
-    
-    SpaceThing(float planetRadius, float orbitRadius, float orbitAngle, float orbitVelocity): 
-        mPlanetRadius(planetRadius),
-        mOrbitRadius(orbitRadius),
-        mOrbitAngle(orbitAngle),
-        mOrbitVelocity(orbitVelocity)
-    {}
+
+    static SpaceThingRef create(float planetRadius, float orbitRadius, float orbitAngle, float orbitVelocity)
+    {
+        return SpaceThingRef(new SpaceThing(planetRadius, orbitRadius, orbitAngle, orbitVelocity));
+    }
     
     ~SpaceThing() {}
     
@@ -27,7 +27,14 @@ public:
     void draw();
     
 private:
-    
+
+    SpaceThing(float planetRadius, float orbitRadius, float orbitAngle, float orbitVelocity): 
+        mPlanetRadius(planetRadius),
+        mOrbitRadius(orbitRadius),
+        mOrbitAngle(orbitAngle),
+        mOrbitVelocity(orbitVelocity)
+    {}
+
     float mPlanetRadius;
     float mOrbitRadius;
     float mOrbitAngle;
