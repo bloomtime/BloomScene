@@ -15,12 +15,10 @@
 #include "BloomNode.h"
 
 // forward declare
-class OrientationNode;
-typedef std::shared_ptr<OrientationNode> OrientationNodeRef;
+typedef std::shared_ptr<class OrientationNode> OrientationNodeRef;
 
 // declare this function outside of the class so that Objective-C blocks can be used
 void setupNotifications( OrientationNodeRef nodeRef );
-
 
 class OrientationNode : public BloomNode {
     
