@@ -134,7 +134,8 @@ bool BloomNode::deepTouchBegan( TouchEvent::Touch touch )
     }
     bool consumed = false;
     // check children
-    BOOST_FOREACH(BloomNodeRef node, mChildren) {
+    // use reverse so that things that will be drawn on top are checked first
+    BOOST_REVERSE_FOREACH(BloomNodeRef node, mChildren) {
         if (node->deepTouchBegan(touch)) {
             consumed = true;
             mActiveTouches[touch.getId()] = node;
