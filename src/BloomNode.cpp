@@ -94,18 +94,17 @@ void BloomNode::deepUpdate()
 
 void BloomNode::deepDraw()
 {
-    //assert(mRoot.lock());
+    assert(mRoot.lock());
+    
     if (mVisible) {
-        glPushMatrix();
-        glMultMatrixf(mTransform); // FIXME only push/mult/pop if mTransform isn't identity
         // draw self    
         draw();
+        
         // draw children
         BOOST_FOREACH(BloomNodeRef child, mChildren) {        
             child->deepDraw();
         }
-        glPopMatrix();
-    }        
+    }     
 }
 
 Matrix44f BloomNode::getConcatenatedTransform() const
@@ -118,7 +117,8 @@ Matrix44f BloomNode::getConcatenatedTransform() const
 
 Vec2f BloomNode::localToGlobal( const Vec2f &pos )
 {
-    return (getConcatenatedTransform() * Vec3f( pos.x, pos.y, 0)).xy();
+    Vec3f globalPos = (getConcatenatedTransform() * Vec3f( pos.x, pos.y, 0));
+    return (globalPos).xy();
 }
 
 Vec2f BloomNode::globalToLocal( const Vec2f &pos )
