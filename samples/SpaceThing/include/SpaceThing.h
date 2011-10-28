@@ -8,7 +8,9 @@
 
 #pragma once
 #include "BloomNode.h"
+#include <string>
 #include "cinder/Vector.h"
+#include "cinder/gl/GlslProg.h"
 
 typedef std::shared_ptr<class SpaceThing> SpaceThingRef;
 
@@ -16,9 +18,9 @@ class SpaceThing : public BloomNode
 {
 public:
 
-    static SpaceThingRef create(float planetRadius, float orbitRadius, float orbitAngle, float orbitVelocity)
+    static SpaceThingRef create(ci::gl::GlslProg prog, float planetRadius, float orbitRadius, float orbitAngle, float orbitVelocity)
     {
-        return SpaceThingRef(new SpaceThing(planetRadius, orbitRadius, orbitAngle, orbitVelocity));
+        return SpaceThingRef(new SpaceThing(prog, planetRadius, orbitRadius, orbitAngle, orbitVelocity));
     }
     
     ~SpaceThing() {}
@@ -28,7 +30,8 @@ public:
     
 private:
 
-    SpaceThing(float planetRadius, float orbitRadius, float orbitAngle, float orbitVelocity): 
+    SpaceThing(ci::gl::GlslProg prog, float planetRadius, float orbitRadius, float orbitAngle, float orbitVelocity): 
+        mProg(prog),
         mPlanetRadius(planetRadius),
         mOrbitRadius(orbitRadius),
         mOrbitAngle(orbitAngle),
@@ -40,4 +43,5 @@ private:
     float mOrbitAngle;
     float mOrbitVelocity;
     
+    ci::gl::GlslProg mProg;
 };

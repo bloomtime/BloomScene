@@ -19,6 +19,8 @@
 		C727C02E121B400300192073 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02D121B400300192073 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C7FB19D6124BC0D70045AFD2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */; };
 		C7FB19D6124BC0D70045AFD3 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB19D5124BC0D70045AFD3 /* CoreText.framework */; };
+		E2A528A0145A86CD0005BE8A /* SpaceThing.frag in Resources */ = {isa = PBXBuildFile; fileRef = E2A5289E145A86CD0005BE8A /* SpaceThing.frag */; };
+		E2A528A1145A86CD0005BE8A /* SpaceThing.vert in Resources */ = {isa = PBXBuildFile; fileRef = E2A5289F145A86CD0005BE8A /* SpaceThing.vert */; };
 		E2D83980143B8BB100E57495 /* BloomNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D838F0143B8BB100E57495 /* BloomNode.cpp */; };
 		E2D83981143B8BB100E57495 /* BloomScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D838F1143B8BB100E57495 /* BloomScene.cpp */; };
 		E2D83985143B8BF800E57495 /* SpaceThing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D83984143B8BF800E57495 /* SpaceThing.cpp */; };
@@ -40,6 +42,8 @@
 		C727C02D121B400300192073 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		C7FB19D5124BC0D70045AFD3 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		E2A5289E145A86CD0005BE8A /* SpaceThing.frag */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = SpaceThing.frag; path = ../resources/SpaceThing.frag; sourceTree = "<group>"; };
+		E2A5289F145A86CD0005BE8A /* SpaceThing.vert */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = SpaceThing.vert; path = ../resources/SpaceThing.vert; sourceTree = "<group>"; };
 		E2D838DB143B8BB100E57495 /* BloomNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BloomNode.h; sourceTree = "<group>"; };
 		E2D838DC143B8BB100E57495 /* BloomScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BloomScene.h; sourceTree = "<group>"; };
 		E2D838F0143B8BB100E57495 /* BloomNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BloomNode.cpp; sourceTree = "<group>"; };
@@ -119,6 +123,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E2A5289F145A86CD0005BE8A /* SpaceThing.vert */,
+				E2A5289E145A86CD0005BE8A /* SpaceThing.frag */,
 				43CD9798123D6504003B628E /* Icon.png */,
 				8D1107310486CEB800E47090 /* SpaceThing-Info.plist */,
 			);
@@ -227,6 +233,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2A528A0145A86CD0005BE8A /* SpaceThing.frag in Resources */,
+				E2A528A1145A86CD0005BE8A /* SpaceThing.vert in Resources */,
 				43CD9799123D6504003B628E /* Icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -253,6 +261,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CINDER_PATH = /Users/tom/Documents/Code/Cinder/CinderES2;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
@@ -282,6 +291,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CINDER_PATH = /Users/tom/Documents/Code/Cinder/CinderES2;
 				COPY_PHASE_STRIP = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -308,7 +318,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = armv7;
-				CINDER_PATH = ../../../../../Code/Cinder/Cinder;
+				CINDER_PATH = ../../../../../Code/Cinder/CinderES2;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
@@ -327,7 +337,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = armv7;
-				CINDER_PATH = ../../../../../Code/Cinder/Cinder;
+				CINDER_PATH = ../../../../../Code/Cinder/CinderES2;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
