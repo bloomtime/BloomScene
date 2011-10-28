@@ -36,39 +36,40 @@ void SpaceThing::draw()
 //    gl::color( Color::white() );
 //    gl::drawSolidCircle( Vec2f::zero(), mPlanetRadius );
     
-    static GLfloat squareVertices[12] = {
-        -mPlanetRadius, -mPlanetRadius, 0.0,
-        mPlanetRadius, -mPlanetRadius, 0.0,
-        -mPlanetRadius,  mPlanetRadius, 0.0,
-        mPlanetRadius,  mPlanetRadius, 0.0
-    };
+    Vec3f vertices[16];
 
-    static GLfloat squareColors[16] = {
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0
-    };
+    // begin at 0,0
+    vertices[0].x = 0.0f;
+    vertices[0].y = 0.0f;
+    vertices[0].z = 0.0f;
 
+    for (int i = 1; i < 16; i++) {
+        float a = M_PI * 2.0f * (float)(i-1) / 14.0f;
+        vertices[i].x = std::cos(a) * mPlanetRadius;
+        vertices[i].y = std::sin(a) * mPlanetRadius;
+        vertices[i].z = 0.0f;
+    }
+
+    GLfloat colors[64];
+    for (int i = 0; i < 64; i++) {
+        colors[i] = 1.0f;
+    }
+    
     mProg.uniform("Modelview", getConcatenatedTransform());
-    
-    mProg.bind();
-    
+
     GLuint vertexAttr = mProg.getAttribLocation("Position"); 
     GLuint colorAttr = mProg.getAttribLocation("SourceColor");
     
     glEnableVertexAttribArray(vertexAttr);
     glEnableVertexAttribArray(colorAttr);
-    
-    glVertexAttribPointer(vertexAttr, 3, GL_FLOAT, 0, 0, squareVertices);    
-    glVertexAttribPointer(colorAttr, 4, GL_FLOAT, 0, 0, squareColors);
-    
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);    
-    
+
+    glVertexAttribPointer(vertexAttr, 3, GL_FLOAT, 0, 0, vertices);    
+    glVertexAttribPointer(colorAttr, 4, GL_FLOAT, 0, 0, colors);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 16);    
+
     glDisableVertexAttribArray(vertexAttr);
     glDisableVertexAttribArray(colorAttr);
 
-    mProg.unbind();
-    
     // and then any children will be draw after this
 }

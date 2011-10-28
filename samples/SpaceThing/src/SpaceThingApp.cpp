@@ -22,12 +22,15 @@ public:
     virtual void    touchesMoved( TouchEvent event );
     virtual void    touchesEnded( TouchEvent event );
     
+    CameraOrtho mCamera;
     gl::GlslProg mSpaceProg;
     BloomSceneRef mBloomSceneRef;
 };
 
 void SpaceThingApp::setup()
 {
+    mCamera.setOrtho(0, getWindowWidth(), getWindowHeight(), 0, -1, 1);
+    
     DataSourceRef vert = loadResource("SpaceThing.vert");
     DataSourceRef frag = loadResource("SpaceThing.frag");
     mSpaceProg = gl::GlslProg( vert, frag );        
@@ -77,23 +80,14 @@ void SpaceThingApp::draw()
 {
 	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
 
-    float width = getWindowWidth();
-    float height = getWindowHeight();
+    mSpaceProg.bind();
     
-    glViewport(0, 0, width, height);
-    
-    float a = 1.0f / width; 
-    float b = 1.0f / height; 
-    float ortho[16] = {
-        a, 0,  0, 0, 
-        0, b,  0, 0,
-        0, 0, -1, 0, 
-        0, 0,  0, 1
-    };
-    mSpaceProg.uniform("Projection", ortho, 16);
+    mSpaceProg.uniform("Projection", mCamera.getProjectionMatrix());
 
     // scene sets 2D camera to window size and recursively draws children (depth first)
     mBloomSceneRef->deepDraw();
+    
+    mSpaceProg.unbind();    
 }
 
 CINDER_APP_COCOA_TOUCH( SpaceThingApp, RendererGl )
