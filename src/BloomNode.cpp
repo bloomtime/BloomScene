@@ -106,7 +106,7 @@ void BloomNode::deepUpdate()
 
 void BloomNode::deepDraw()
 {
-    assert(mRoot.lock());
+    //assert(mRoot.lock());
     
     if (mVisible) {
         // draw self    
