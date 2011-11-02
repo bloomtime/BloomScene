@@ -81,7 +81,6 @@ BloomNodeRef BloomNode::getChildById( const int &childId ) const
 
 void BloomNode::deepUpdate()
 {
-    //assert(mRoot.lock());
     if (mVisible) {
         // update self
         update();
@@ -93,9 +92,7 @@ void BloomNode::deepUpdate()
 }
 
 void BloomNode::deepDraw()
-{
-    assert(mRoot.lock());
-    
+{    
     if (mVisible) {
         // draw self    
         draw();
