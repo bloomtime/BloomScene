@@ -38,6 +38,18 @@ void BloomNode::addChildAt( BloomNodeRef child, const int &index )
     // otherwise just wait, it will be set eventually
 }
 
+void BloomNode::setChildIndex( BloomNodeRef child, const int &index )
+{
+    std::vector<BloomNodeRef>::iterator i = std::find(mChildren.begin(), mChildren.end(), child);
+    if ( i != mChildren.end() ) {
+        mChildren.erase( i );
+        mChildren.insert( mChildren.begin() + index, child );
+    }
+    else {
+        addChildAt( child, index );
+    }
+}
+
 void BloomNode::removeChild( BloomNodeRef child )
 {
     std::vector<BloomNodeRef>::iterator i = std::find(mChildren.begin(), mChildren.end(), child);
