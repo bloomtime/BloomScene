@@ -8,38 +8,37 @@
 
 #include <boost/foreach.hpp>
 #include "BloomScene.h"
-#include "cinder/app/AppCocoaTouch.h"
+//#include "cinder/app/AppCocoaTouch.h"
 #include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;
 
-BloomSceneRef BloomScene::create( AppCocoaTouch *app )
+BloomSceneRef BloomScene::create( ci::Vec2f interfaceSize, ci::Vec2f windowSize )
 {
-    BloomSceneRef ref = BloomSceneRef( new BloomScene( app ) );
+    BloomSceneRef ref = BloomSceneRef( new BloomScene( interfaceSize, windowSize ) );
     ref->mRoot = BloomSceneWeakRef( ref );
     return ref;
 }
 
-BloomScene::BloomScene( AppCocoaTouch *app ): 
-    mApp( app ), 
-    mInterfaceSize( 0.0f, 0.0f )
+BloomScene::BloomScene( ci::Vec2f interfaceSize, ci::Vec2f windowSize ): 
+    mWindowSize( windowSize ),
+    mInterfaceSize( interfaceSize )
 {
     mParent = BloomNodeRef(); // NULL, we are the parent (crash rather than recurse)
     mRoot = BloomSceneRef();  // NULL, will be set in create() because we are the root
     
-    cbTouchesBegan = mApp->registerTouchesBegan( this, &BloomScene::touchesBegan );
-    cbTouchesMoved = mApp->registerTouchesMoved( this, &BloomScene::touchesMoved );
-    cbTouchesEnded = mApp->registerTouchesEnded( this, &BloomScene::touchesEnded );
+//    cbTouchesBegan = mApp->registerTouchesBegan( this, &BloomScene::touchesBegan );
+//    cbTouchesMoved = mApp->registerTouchesMoved( this, &BloomScene::touchesMoved );
+//    cbTouchesEnded = mApp->registerTouchesEnded( this, &BloomScene::touchesEnded );
     
-    mInterfaceSize = mApp->getWindowSize();
 }
 
 BloomScene::~BloomScene()
 {
-    mApp->unregisterTouchesBegan( cbTouchesBegan );
-    mApp->unregisterTouchesMoved( cbTouchesMoved );
-    mApp->unregisterTouchesEnded( cbTouchesEnded );
+//    mApp->unregisterTouchesBegan( cbTouchesBegan );
+//    mApp->unregisterTouchesMoved( cbTouchesMoved );
+//    mApp->unregisterTouchesEnded( cbTouchesEnded );
 }
 
 bool BloomScene::touchesBegan( TouchEvent event )

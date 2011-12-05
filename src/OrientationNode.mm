@@ -6,7 +6,7 @@
 //  Copyright 2011 Bloom Studio, Inc. All rights reserved.
 //
 
-#include "cinder/app/AppCocoaTouch.h" // for getElapsedSeconds, getWindowSize
+#import <UIKit/UIDevice.h>
 #include "cinder/gl/gl.h"
 #include "OrientationNode.h"
 #include "BloomScene.h"
@@ -15,9 +15,7 @@ using namespace ci;
 
 OrientationNodeRef OrientationNode::create()
 {
-    OrientationNodeRef nodeRef = OrientationNodeRef( new OrientationNode() );
-    setupNotifications( nodeRef );
-    return nodeRef;
+    return OrientationNodeRef( new OrientationNode() );
 }
 
 OrientationNode::OrientationNode(): 
@@ -25,6 +23,7 @@ OrientationNode::OrientationNode():
     mTargetInterfaceSize(0.0f,0.0f),
     mTargetInterfaceAngle(0.0f),
     mLastOrientationChangeTime(0.0f),
+    mLastUpdateTime(0.0f),
     mOrientationAnimationDuration(0.3f),
     mPrevInterfaceAngle(0.0f),
     mPrevInterfaceSize(0.0f,0.0f),
@@ -36,6 +35,13 @@ OrientationNode::OrientationNode():
 OrientationNode::~OrientationNode()
 {
     // TODO: stopNotifications
+}
+
+bool OrientationNode::addedToScene()
+{
+    // TODO: should this be a weak reference to avoid circular refs in the notification block?
+    setupNotifications( this );
+    return true;
 }
 
 void OrientationNode::orientationChanged( const Orientation &orientation )
@@ -62,7 +68,7 @@ void OrientationNode::setInterfaceOrientation( const Orientation &orientation, b
 	}
     
     // get the facts
-    Vec2f deviceSize = app::getWindowSize();
+    Vec2f deviceSize = getRoot()->getWindowSize();
     float orientationAngle = getOrientationAngle( mInterfaceOrientation );
     
     // assign new targets
@@ -85,7 +91,7 @@ void OrientationNode::setInterfaceOrientation( const Orientation &orientation, b
         mPrevInterfaceAngle = mInterfaceAngle;
         mPrevInterfaceSize = getRoot()->getInterfaceSize();
         // and reset the counter
-        mLastOrientationChangeTime = app::getElapsedSeconds();
+        mLastOrientationChangeTime = mLastUpdateTime;
     }
     else {
         // just jump to the animation's end in next update
@@ -96,12 +102,12 @@ void OrientationNode::setInterfaceOrientation( const Orientation &orientation, b
     mCurrentlyAnimating = true;
 }
 
-void OrientationNode::update()
+void OrientationNode::update( float elapsedSeconds )
 {
     // animate transition
     if (mCurrentlyAnimating) {
         
-        float t = app::getElapsedSeconds() - mLastOrientationChangeTime;
+        float t = elapsedSeconds - mLastOrientationChangeTime;
 
         if (t < mOrientationAnimationDuration) {
             float p = t / mOrientationAnimationDuration;
@@ -118,10 +124,11 @@ void OrientationNode::update()
         
         // update matrix (for globalToLocal etc)
         mTransform.setToIdentity();
-        mTransform.translate( Vec3f( app::getWindowCenter(), 0 ) );
+        mTransform.translate( Vec3f( getRoot()->getWindowSize() * 0.5f, 0 ) );
         mTransform.rotate( Vec3f( 0, 0, mInterfaceAngle ) );
         mTransform.translate( Vec3f( getRoot()->getInterfaceSize() * -0.5f, 0 ) );                        
     }    
+    mLastUpdateTime = elapsedSeconds;
 }
 
 float OrientationNode::getOrientationAngle( const Orientation &orientation )
@@ -155,21 +162,43 @@ std::string OrientationNode::getOrientationDescription( const Orientation &orien
     }
 }
 
+OrientationNode::Orientation OrientationNode::convertOrientation( int uiDeviceOrientation )
+{
+    switch (uiDeviceOrientation) {
+        case UIDeviceOrientationPortrait:            // Device oriented vertically, home button on the bottom
+            return PORTRAIT;
+        case UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
+            return UPSIDE_DOWN_PORTRAIT;
+        case UIDeviceOrientationLandscapeLeft:       // Device oriented horizontally, home button on the right
+            return LANDSCAPE_LEFT;
+        case UIDeviceOrientationLandscapeRight:      // Device oriented horizontally, home button on the left
+            return LANDSCAPE_RIGHT;
+        case UIDeviceOrientationFaceUp:              // Device oriented flat, face up
+            return FACE_UP;
+        case UIDeviceOrientationFaceDown:             // Device oriented flat, face down        
+            return FACE_DOWN;
+        case UIDeviceOrientationUnknown:
+        default:
+            return UNKNOWN;
+    }
+}
+
 // not a member function, so that blocks work correctly
-void setupNotifications( OrientationNodeRef nodeRef )
+void setupNotifications( OrientationNode *node )
 {
     [[NSNotificationCenter defaultCenter] addObserverForName:@"UIDeviceOrientationDidChangeNotification"
                                                       object:nil 
                                                        queue:nil 
-                                                  usingBlock: ^(NSNotification *notification) {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+                                                  usingBlock: ^(NSNotification *notification)
+    {
+        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
         if (UIDeviceOrientationIsValidInterfaceOrientation(orientation)) {
-            nodeRef->orientationChanged(OrientationNode::Orientation(orientation));
+            node->orientationChanged(OrientationNode::convertOrientation(orientation));
             // let's always make sure the task bar is shown on the correct side of the device            
             [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientation(orientation);
         }
     }];
     // use initial taskbar orientation to derive a valid interface orientation
-    nodeRef->setInterfaceOrientation( OrientationNode::Orientation([UIApplication sharedApplication].statusBarOrientation), false );
+    node->setInterfaceOrientation( OrientationNode::convertOrientation([UIApplication sharedApplication].statusBarOrientation), false );
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];            
 }

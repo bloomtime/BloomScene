@@ -91,14 +91,14 @@ BloomNodeRef BloomNode::getChildById( const int &childId ) const
     return BloomNodeRef(); // aka NULL
 }
 
-void BloomNode::deepUpdate()
+void BloomNode::deepUpdate( float elapsedSeconds )
 {
     if (mVisible) {
         // update self
-        update();
+        update( elapsedSeconds );
         // update children
         BOOST_FOREACH(BloomNodeRef child, mChildren) {        
-            child->deepUpdate();
+            child->deepUpdate( elapsedSeconds );
         }
     }
 }

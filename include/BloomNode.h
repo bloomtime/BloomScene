@@ -95,7 +95,7 @@ public:
     
     // subclasses should mess with these, just draw/update yourself (not children)
     // (deepDraw/Update draws children in correct order)
-    virtual void update() {}
+    virtual void update( float elapsedSeconds ) {}
     virtual void draw() {}
     
 // TRANFORM METHODS
@@ -144,7 +144,7 @@ public:
     
     // recurse to children and call update()
     // (public so it can be overridden, but generally considered internal)
-    virtual void deepUpdate();
+    virtual void deepUpdate( float elapsedSeconds );
     
     // recurse to children and call touchBegan/Moved/Ended
     // (public so they can be overridden, but generally considered internal)

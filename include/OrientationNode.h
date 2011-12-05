@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include <UIKit/UIDevice.h> // importing this anywhere else means we have to set our app to be Objective-C++, sorry!
 #include <map>
 #include <string>
 #include "cinder/Function.h"
@@ -18,19 +17,21 @@
 typedef std::shared_ptr<class OrientationNode> OrientationNodeRef;
 
 // declare this function outside of the class so that Objective-C blocks can be used
-void setupNotifications( OrientationNodeRef nodeRef );
+void setupNotifications( OrientationNode *node );
 
 class OrientationNode : public BloomNode {
     
 public:
 
-    // map our own shorter constants to Apple's long ones :)
+    // our own shorter constants for Apple's long ones :)
     enum Orientation { 
-        PORTRAIT = UIDeviceOrientationPortrait, 
-        LANDSCAPE_LEFT = UIDeviceOrientationLandscapeLeft, 
-        UPSIDE_DOWN_PORTRAIT = UIDeviceOrientationPortraitUpsideDown, 
-        LANDSCAPE_RIGHT = UIDeviceOrientationLandscapeRight 
-        // note that Apple has face-up, face-down and unknown too, but we filter these out in our callback
+        UNKNOWN,
+        PORTRAIT,             // home button bottom
+        UPSIDE_DOWN_PORTRAIT, // home button top
+        LANDSCAPE_LEFT,       // home button right
+        LANDSCAPE_RIGHT,      // home button left
+        FACE_UP,
+        FACE_DOWN
     };
     
     static OrientationNodeRef create();
@@ -38,6 +39,8 @@ public:
         
     Orientation getInterfaceOrientation() { return mInterfaceOrientation; }
     void setInterfaceOrientation( const Orientation &orientation, bool animate = true );
+
+    // TODO: get/setDeviceOrientation
     
     void enableAnimation( bool enable = true ) { mEnableAnimation = enable; }
     bool isAnimationEnabled() { return mEnableAnimation; }
@@ -53,11 +56,15 @@ public:
     std::string getOrientationDescription( const Orientation &orientation );
 
     // animate mRoot interfaceSize and this node's transform matrix
-    virtual void update();
+    virtual void update( float elapsedSeconds );
 
     // TODO: make private and make setupNotifications a friend function?
     void orientationChanged( const Orientation &orientation );
 
+    bool addedToScene();
+    
+    static Orientation convertOrientation( int uiDeviceOrienation );
+    
 protected:
     
     OrientationNode();
@@ -72,6 +79,7 @@ protected:
     
     // for lerping:
     float mLastOrientationChangeTime;
+    float mLastUpdateTime;
     float mOrientationAnimationDuration;
     float mPrevInterfaceAngle;
     ci::Vec2f mPrevInterfaceSize;
