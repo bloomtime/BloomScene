@@ -63,13 +63,28 @@ typedef std::shared_ptr<BloomSceneEvent> BloomSceneEventRef;
 
 class BloomNode : public std::enable_shared_from_this<BloomNode> {
 
-public:
+protected:
 
+    // subclasses can call this, but lib users can't create a BloomNode directly
+    
     // supply an id...
     BloomNode( const int &nodeId ): mVisible(true), mId(nodeId) {}
+    
     // ... or one will be generated for you
     BloomNode(): mVisible(true), mId(sNextNodeId++) {}
     
+public:
+
+    static BloomNodeRef create()
+    {
+        return BloomNodeRef( new BloomNode() );
+    }
+
+    static BloomNodeRef create( const int &nodeId )
+    {
+        return BloomNodeRef( new BloomNode(nodeId) );
+    }
+
     // sub-classing is to be expected
     virtual ~BloomNode() {}
     
