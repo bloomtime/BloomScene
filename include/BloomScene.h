@@ -7,14 +7,9 @@
 //
 
 #pragma once
-#include <map>
+
 #include "cinder/Function.h"
 #include "BloomNode.h"
-
-// forward declare to avoid full include
-//namespace cinder { namespace app {
-//    class AppCocoaTouch;
-//} }
 
 class BloomScene : public BloomNode {
     
@@ -41,14 +36,9 @@ public:
     bool touchesMoved( ci::app::TouchEvent event );
     bool touchesEnded( ci::app::TouchEvent event );
     
-//    ci::app::AppCocoaTouch *mApp;
-    
-    ci::Vec2f mInterfaceSize, mWindowSize;
-    
-//    ci::CallbackId cbTouchesBegan, cbTouchesMoved, cbTouchesEnded;
-    
 private:
   
     BloomScene( ci::Vec2f interfaceSize, ci::Vec2f windowSize );
-    
+
+    ci::Vec2f mInterfaceSize, mWindowSize;
 };
