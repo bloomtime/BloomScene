@@ -6,7 +6,6 @@
 //  Copyright 2011 Bloom Studio, Inc. All rights reserved.
 //
 
-#include <boost/foreach.hpp>
 #include "BloomScene.h"
 
 using namespace ci;
@@ -34,7 +33,7 @@ BloomScene::~BloomScene()
 bool BloomScene::touchesBegan( TouchEvent event )
 {
     bool consumed = true;
-    BOOST_FOREACH(TouchEvent::Touch touch, event.getTouches()) {
+    for(const TouchEvent::Touch &touch : event.getTouches()) {
         consumed = deepTouchBegan( touch ) && consumed; // recurses to children
     }    
     return consumed; // only true if all touches were consumed
@@ -43,7 +42,7 @@ bool BloomScene::touchesBegan( TouchEvent event )
 bool BloomScene::touchesMoved( TouchEvent event )
 {
     bool consumed = true;
-    BOOST_FOREACH(TouchEvent::Touch touch, event.getTouches()) {
+    for(const TouchEvent::Touch &touch : event.getTouches()) {
         consumed = deepTouchMoved( touch ) && consumed; // recurses to children
     }
     return consumed; // only true if all touches were consumed
@@ -52,7 +51,7 @@ bool BloomScene::touchesMoved( TouchEvent event )
 bool BloomScene::touchesEnded( TouchEvent event )
 {
     bool consumed = true;
-    BOOST_FOREACH(TouchEvent::Touch touch, event.getTouches()) {
+    for(const TouchEvent::Touch &touch : event.getTouches()) {
         consumed = deepTouchEnded( touch ) && consumed; // recurses to children
     }    
     return consumed; // only true if all touches were consumed

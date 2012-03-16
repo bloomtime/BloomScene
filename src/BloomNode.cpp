@@ -6,10 +6,10 @@
 //  Copyright 2011 Bloom Studio, Inc. All rights reserved.
 //
 
-#include <boost/foreach.hpp>
 #include "BloomNode.h"
 #include "BloomScene.h"
 #include "cinder/gl/gl.h"
+#include <boost/range/adaptor/reversed.hpp>
 
 using namespace ci;
 using namespace ci::app; // for TouchEvent::Touch
@@ -97,7 +97,7 @@ void BloomNode::deepUpdate( float elapsedSeconds )
         // update self
         update( elapsedSeconds );
         // update children
-        BOOST_FOREACH(BloomNodeRef child, mChildren) {        
+        for(BloomNodeRef &child : mChildren) {        
             child->deepUpdate( elapsedSeconds );
         }
     }
@@ -110,7 +110,7 @@ void BloomNode::deepDraw()
         draw();
         
         // draw children
-        BOOST_FOREACH(BloomNodeRef child, mChildren) {        
+        for(BloomNodeRef &child : mChildren) {        
             child->deepDraw();
         }
     }     
@@ -144,7 +144,7 @@ bool BloomNode::deepTouchBegan( TouchEvent::Touch touch )
     bool consumed = false;
     // check children
     // use reverse so that things that will be drawn on top are checked first
-    BOOST_REVERSE_FOREACH(BloomNodeRef node, mChildren) {
+    for (BloomNodeRef &node : boost::adaptors::reverse(mChildren)) {
         if (node->deepTouchBegan(touch)) {
             consumed = true;
             mActiveTouches[touch.getId()] = node;
@@ -216,20 +216,20 @@ bool BloomNode::deepHitTest( const Vec2f &screenPos )
 {
     if (mVisible) {
         // test children
-        BOOST_FOREACH(BloomNodeRef child, mChildren) {        
+        for(BloomNodeRef &child : mChildren) {
             if ( child->deepHitTest( screenPos ) ) {
                 return true;
             }
         }
         // test self
-        return hitTest( screenPos );
+        return this->hitTest( screenPos );
     }
     return false;
 }
 
 void BloomNode::deepSetRoot( BloomSceneRef root )
 {
-    BOOST_FOREACH(BloomNodeRef child, mChildren) {        
+    for(BloomNodeRef &child : mChildren) {        
         // propagate to children first
         child->deepSetRoot( root );
     }
