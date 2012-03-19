@@ -41,6 +41,7 @@ protected:
     ci::app::AppCocoaTouch *mApp;
     
     ci::Vec2f mInterfaceSize;
+    float mContentScaleFactor;
     
     ci::CallbackId cbTouchesBegan, cbTouchesMoved, cbTouchesEnded;
     

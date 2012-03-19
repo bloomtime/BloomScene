@@ -63,6 +63,9 @@ void OrientationNode::setInterfaceOrientation( const Orientation &orientation, b
     
     // get the facts
     Vec2f deviceSize = app::getWindowSize();
+    // adjust for retina (TODO: only #ifdef CINDER_COCOATOUCH or whatever?)
+    deviceSize /= ((AppCocoaTouch*)App::get())->getContentScaleFactor();
+    
     float orientationAngle = getOrientationAngle( mInterfaceOrientation );
     
     // assign new targets
@@ -116,9 +119,13 @@ void OrientationNode::update()
             mCurrentlyAnimating = false;
         }
         
+        Vec2f windowCenter = app::getWindowCenter();
+        // adjust for retina (TODO: only #ifdef CINDER_COCOATOUCH or whatever?)
+        windowCenter /= ((AppCocoaTouch*)App::get())->getContentScaleFactor();
+        
         // update matrix (for globalToLocal etc)
         mTransform.setToIdentity();
-        mTransform.translate( Vec3f( app::getWindowCenter(), 0 ) );
+        mTransform.translate( Vec3f( windowCenter, 0 ) );
         mTransform.rotate( Vec3f( 0, 0, mInterfaceAngle ) );
         mTransform.translate( Vec3f( getRoot()->getInterfaceSize() * -0.5f, 0 ) );                        
     }    

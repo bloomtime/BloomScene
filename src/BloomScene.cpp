@@ -23,7 +23,8 @@ BloomSceneRef BloomScene::create( AppCocoaTouch *app )
 
 BloomScene::BloomScene( AppCocoaTouch *app ): 
     mApp( app ), 
-    mInterfaceSize( 0.0f, 0.0f )
+    mInterfaceSize( 0.0f, 0.0f ),
+    mContentScaleFactor( 1.0f )
 {
     mParent = BloomNodeRef(); // NULL, we are the parent (crash rather than recurse)
     mRoot = BloomSceneRef();  // NULL, will be set in create() because we are the root
@@ -33,6 +34,12 @@ BloomScene::BloomScene( AppCocoaTouch *app ):
     cbTouchesEnded = mApp->registerTouchesEnded( this, &BloomScene::touchesEnded );
     
     mInterfaceSize = mApp->getWindowSize();
+    mContentScaleFactor = mApp->getContentScaleFactor();
+    
+    if (mContentScaleFactor != 1.0f) {
+        mInterfaceSize /= mContentScaleFactor;
+        mTransform = Matrix44f::createScale( Vec3f(mContentScaleFactor,mContentScaleFactor,1.0f) );
+    }
 }
 
 BloomScene::~BloomScene()
