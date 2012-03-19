@@ -12,6 +12,7 @@
 #include "BloomScene.h"
 
 using namespace ci;
+using namespace ci::app;
 
 OrientationNodeRef OrientationNode::create()
 {
