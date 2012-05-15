@@ -50,6 +50,16 @@ void BloomNode::setChildIndex( BloomNodeRef child, const int &index )
     }
 }
 
+int BloomNode::getChildIndex( BloomNodeRef child )
+{
+    std::vector<BloomNodeRef>::iterator i = std::find(mChildren.begin(), mChildren.end(), child);
+    int pos = i - mChildren.begin();
+    if (pos < mChildren.size()) {
+        return pos;
+    }
+    return -1;
+}
+
 void BloomNode::removeChild( BloomNodeRef child )
 {
     std::vector<BloomNodeRef>::iterator i = std::find(mChildren.begin(), mChildren.end(), child);

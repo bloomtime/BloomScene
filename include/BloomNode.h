@@ -93,6 +93,7 @@ public:
     void addChild( BloomNodeRef child );
     void addChildAt( BloomNodeRef child, const int &index );
     void setChildIndex( BloomNodeRef child, const int &index );
+    int getChildIndex(  BloomNodeRef child );
     void removeChild( BloomNodeRef child );
     void removeChildren();
     BloomNodeRef removeChildAt( const int &index );
